@@ -6,7 +6,9 @@ import { ParsedUrlQuery } from "querystring";
 import https from "https";
 
 const SingleProductPage = (props: any) => {
-  console.log("single product props", props);
+  const {
+    product: { name, price },
+  } = props;
   return (
     <>
       <Head>
@@ -16,7 +18,12 @@ const SingleProductPage = (props: any) => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Layout>
-        <div>Single product page</div>
+        <div>
+          <div className="row-inner">
+            <h1>{name}</h1>
+            <h3>{price}</h3>
+          </div>
+        </div>
       </Layout>
     </>
   );
@@ -38,7 +45,6 @@ export async function getStaticPaths() {
         httpsAgent: agent,
       }
     );
-    console.log("Response from server:", res.data);
     authToken = res.data;
   } catch (error) {
     console.error("Error fetching token:", error);
@@ -56,13 +62,13 @@ export async function getStaticPaths() {
         httpsAgent: agent,
       }
     );
-    console.log("Response from server:", res.data);
     const products = res.data.items;
-    console.log("Products from Magento:", products);
 
     const paths = products.map((product: any) => ({
       params: { slug: product.sku },
     }));
+
+    console.log("Paths:", paths);
 
     return { paths, fallback: false };
   } catch (error) {
@@ -105,7 +111,6 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
         httpsAgent: agent,
       }
     );
-    console.log("Response from server:", res.data);
     const product = res.data;
 
     return { props: { product } };
