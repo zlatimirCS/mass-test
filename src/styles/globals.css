@@ -74,4 +74,10 @@ a {
   justify-content: space-between;
   align-items: center;
 }
+
+.article-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 3rem;
+}
 /*GENERIC GLOBAL STYLES*/

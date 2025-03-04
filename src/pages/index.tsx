@@ -2,6 +2,7 @@ import Head from "next/head";
 import Layout from "@/components/Layout";
 import HomepageHero from "@/components/ui/HomepageHero";
 import FullWidthCarousel from "@/components/ui/FullWidthCarousel";
+import Promotions from "@/components/ui/Promotions";
 
 export default function Home() {
   return (
@@ -16,6 +17,7 @@ export default function Home() {
         <>
           <HomepageHero />
           <FullWidthCarousel />
+          <Promotions />
         </>
       </Layout>
     </>

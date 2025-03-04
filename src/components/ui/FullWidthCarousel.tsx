@@ -1,4 +1,4 @@
-import { Typography, Box } from "@mui/material";
+import { Box } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { promotionsCards } from "@/helpers/data/data";
 import PromotionCard from "@/components/ui/PromotionCard";
