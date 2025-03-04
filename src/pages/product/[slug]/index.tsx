@@ -68,9 +68,28 @@ export async function getStaticPaths() {
       params: { slug: product.sku },
     }));
 
-    console.log("Paths:", paths);
+    const morePaths = products.flatMap((product: any) =>
+      product.product_links.map((link: any) => ({
+        params: { slug: link.linked_product_sku },
+      }))
+    );
 
-    return { paths, fallback: false };
+    // const uniquePaths = [...paths, ...morePaths];
+    // get unique paths by converting to Set and back to Array
+    const uniquePaths = Array.from(new Set([...paths, ...morePaths]));
+
+    const uniqueArray = uniquePaths.filter(
+      (o, index, arr) =>
+        arr.findIndex((item) => JSON.stringify(item) === JSON.stringify(o)) ===
+        index
+    );
+    console.log("Paths", paths);
+    console.log("uniqueArray", uniqueArray);
+    // console.log("Unique paths", uniquePaths);
+
+    // console.log("morePaths", morePaths);
+
+    return { paths: uniqueArray, fallback: false };
   } catch (error) {
     console.error("Error fetching products:", error);
     return { paths: [], fallback: false };
