@@ -7,6 +7,9 @@ import {
 } from "@mui/material/styles";
 
 declare module "@mui/material/styles" {
+  interface Palette {
+    yellowBrand: SimplePaletteColorOptions;
+  }
   interface PaletteOptions {
     yellowBrand: SimplePaletteColorOptions;
   }
@@ -39,12 +42,14 @@ const theme = createTheme({
     },
   },
   typography: {
-    htmlFontSize: 10,
     h1: {
-      fontSize: "6rem",
+      fontSize: "4rem",
       lineHeight: 1.167,
       letterSpacing: "-0.01562em",
       fontFamily: "Geist",
+      "@media (min-width:600px)": {
+        fontSize: "6rem",
+      },
     },
     body1: {
       fontSize: "1.6rem",
