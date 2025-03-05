@@ -49,7 +49,7 @@ const theme = createTheme({
       letterSpacing: "-0.01562em",
       fontFamily: "Inter",
       "@media (min-width:600px)": {
-        fontSize: "6rem",
+        fontSize: "4rem",
       },
     },
     body1: {

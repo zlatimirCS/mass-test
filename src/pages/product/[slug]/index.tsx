@@ -4,13 +4,19 @@ import { GetStaticPaths, GetStaticProps } from "next";
 import axios from "axios";
 import { ParsedUrlQuery } from "querystring";
 import https from "https";
-import { get } from "http";
+import { Box, Typography } from "@mui/material";
+import { styled } from "@mui/material/styles";
+
+const MyStyledBox = styled(Box)(({ theme }) => ({
+  padding: "60px 0",
+  display: "grid",
+  gridTemplateColumns: "1fr 1fr",
+  gap: "20px",
+}));
 
 const SingleProductPage = (props: any) => {
   console.log("Props", props);
-  const {
-    product: { name, price },
-  } = props;
+  const { product } = props;
   return (
     <>
       <Head>
@@ -22,8 +28,34 @@ const SingleProductPage = (props: any) => {
       <Layout>
         <div>
           <div className="row-inner">
-            <h1>{name}</h1>
-            <h3>{price}</h3>
+            <MyStyledBox>
+              {/*Product Slider*/}
+              <article></article>
+              {/*Product Slider*/}
+              {/*Product Details*/}
+              <article>
+                <Typography
+                  variant="h1"
+                  sx={{ fontWeight: "800", letterSpacing: "1.5px" }}
+                >
+                  {product.name}
+                </Typography>
+                <Typography
+                  variant="h3"
+                  sx={{ marginTop: "30px", marginBottom: "30px" }}
+                >
+                  Price: <span>{product.price}</span>
+                </Typography>
+                <button>Add to cart</button>
+              </article>
+              {/*Product Details*/}
+            </MyStyledBox>
+            {/* <h1>{product.name}</h1>
+            <h3>{product.price}</h3> */}
+            {/* <img
+              src={`https://magento.test/pub/media/catalog/product/${product.media_gallery_entries[0].file}`}
+              alt="asdasd"
+            /> */}
           </div>
         </div>
       </Layout>
