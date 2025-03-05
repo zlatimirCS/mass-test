@@ -18,8 +18,8 @@ const HomepageHero = () => {
           variant="h1"
           color="common.white"
           sx={{
-            fontWeight: "900",
-            textShadow: "6px 6px 3px rgba(0, 0, 0, 0.5)",
+            fontWeight: "700",
+            textShadow: "3px 3px 3px rgba(0, 0, 0, 0.5)",
           }}
         >
           New Tires For Sale Online

@@ -4,8 +4,10 @@ import { GetStaticPaths, GetStaticProps } from "next";
 import axios from "axios";
 import { ParsedUrlQuery } from "querystring";
 import https from "https";
+import { get } from "http";
 
 const SingleProductPage = (props: any) => {
+  console.log("Props", props);
   const {
     product: { name, price },
   } = props;
@@ -54,7 +56,7 @@ export async function getStaticPaths() {
       rejectUnauthorized: false, // Ignore SSL verification
     });
     const res = await axios.get(
-      "http://magento.test/rest/V1/products?searchCriteria[pageSize]=10&searchCriteria[currentPage]=1",
+      "https://magento.test/rest/V1/products?searchCriteria[pageSize]=1&searchCriteria[currentPage]=1&searchCriteria[sortOrders][0][field]=created_at&searchCriteria[sortOrders][0[direction]=DESC&searchCriteria[filterGroups][0][filters][0][field]=type_id&searchCriteria[filterGroups][0][filters][0][value]=configurable&searchCriteria[filterGroups][0][filters][0][condition_type]=eq",
       {
         headers: {
           Authorization: `Bearer ${authToken}`,
@@ -63,19 +65,50 @@ export async function getStaticPaths() {
       }
     );
     const products = res.data.items;
+    console.log("res Products", products);
 
     const paths = products.map((product: any) => ({
       params: { slug: product.sku },
     }));
 
-    const morePaths = products.flatMap((product: any) =>
-      product.product_links.map((link: any) => ({
-        params: { slug: link.linked_product_sku },
-      }))
+    const childProductIds = products.flatMap(
+      (product: any) =>
+        product?.extension_attributes?.configurable_product_links || []
     );
 
-    // const uniquePaths = [...paths, ...morePaths];
-    // get unique paths by converting to Set and back to Array
+    let morePaths: any = [];
+
+    const getMorePaths = async (childProductIds: any) => {
+      const query = new URLSearchParams({
+        "searchCriteria[filterGroups][0][filters][0][field]": "entity_id",
+        "searchCriteria[filterGroups][0][filters][0][value]":
+          childProductIds.join(","),
+        "searchCriteria[filterGroups][0][filters][0][condition_type]": "in",
+      }).toString();
+      console.log("query", query);
+
+      const response = await axios.get(
+        `https://magento.test/rest/V1/products?${query}`,
+        {
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+          },
+          httpsAgent: agent,
+        }
+      );
+      console.log("response123", response?.data);
+      morePaths = response.data.items.map((product: any) => ({
+        params: { slug: product.sku },
+      }));
+      console.log("morePaths123", morePaths);
+    };
+
+    if (childProductIds.length > 0) {
+      await getMorePaths(childProductIds);
+    }
+    console.log("childProductIds", childProductIds);
+    console.log("morePaths", morePaths);
+
     const uniquePaths = Array.from(new Set([...paths, ...morePaths]));
 
     const uniqueArray = uniquePaths.filter(
@@ -83,8 +116,6 @@ export async function getStaticPaths() {
         arr.findIndex((item) => JSON.stringify(item) === JSON.stringify(o)) ===
         index
     );
-    console.log("Paths", paths);
-    console.log("uniqueArray", uniqueArray);
     // console.log("Unique paths", uniquePaths);
 
     // console.log("morePaths", morePaths);

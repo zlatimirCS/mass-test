@@ -27,7 +27,7 @@ const colors = {
 const theme = createTheme({
   palette: {
     common: {
-      black: "#000",
+      black: "#231f20",
       white: "#fff",
     },
     primary: {
@@ -42,11 +42,12 @@ const theme = createTheme({
     },
   },
   typography: {
+    fontFamily: "Inter",
     h1: {
       fontSize: "4rem",
       lineHeight: 1.167,
       letterSpacing: "-0.01562em",
-      fontFamily: "Geist",
+      fontFamily: "Inter",
       "@media (min-width:600px)": {
         fontSize: "6rem",
       },
@@ -55,13 +56,13 @@ const theme = createTheme({
       fontSize: "1.6rem",
       lineHeight: 1.5,
       letterSpacing: "0.00938em",
-      fontFamily: "Geist",
+      fontFamily: "Inter",
     },
     body2: {
       fontSize: "1.4rem",
       lineHeight: 1.43,
       letterSpacing: "0.01071em",
-      fontFamily: "Geist",
+      fontFamily: "Inter",
     },
   },
   components: {
