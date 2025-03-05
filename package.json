@@ -16,12 +16,14 @@
     "next": "15.2.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-image-gallery": "^1.4.0",
     "swiper": "^11.2.5"
   },
   "devDependencies": {
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/react-image-gallery": "^1.2.4",
     "typescript": "^5"
   }
 }

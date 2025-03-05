@@ -17,6 +17,7 @@ body {
   color: var(--text);
   background: var(--background);
   /* font-family: Arial, Helvetica, sans-serif; */
+  font-family: "Inter", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -81,3 +82,13 @@ a {
   gap: 3rem;
 }
 /*GENERIC GLOBAL STYLES*/
+
+.custom-image-gallery .image-gallery-image {
+  height: 500px; /* Set the desired height for the main carousel images */
+  object-fit: cover; /* Ensure the image covers the area */
+}
+
+.fullscreen .image-gallery-image {
+  height: calc(100vh - 130px); /* Set the fullscreen image to full height */
+  object-fit: contain; /* Ensure the image fits within the viewport */
+}

@@ -6,17 +6,27 @@ import { ParsedUrlQuery } from "querystring";
 import https from "https";
 import { Box, Typography } from "@mui/material";
 import { styled } from "@mui/material/styles";
+import ImageGallery from "react-image-gallery";
+import "react-image-gallery/styles/css/image-gallery.css";
 
 const MyStyledBox = styled(Box)(({ theme }) => ({
   padding: "60px 0",
   display: "grid",
   gridTemplateColumns: "1fr 1fr",
-  gap: "20px",
+  gap: "40px",
 }));
 
 const SingleProductPage = (props: any) => {
   console.log("Props", props);
   const { product } = props;
+
+  const images = product.media_gallery_entries.map((image: any) => ({
+    original: `https://magento.test/pub/media/catalog/product/${image.file}`,
+    thumbnail: `https://magento.test/pub/media/catalog/product/${image.file}`,
+    fullscreen: `https://magento.test/pub/media/catalog/product/${image.file}`,
+    // originalHeight: 400,
+  }));
+
   return (
     <>
       <Head>
@@ -30,7 +40,12 @@ const SingleProductPage = (props: any) => {
           <div className="row-inner">
             <MyStyledBox>
               {/*Product Slider*/}
-              <article></article>
+              <article>
+                <ImageGallery
+                  items={images}
+                  additionalClass="custom-image-gallery"
+                />
+              </article>
               {/*Product Slider*/}
               {/*Product Details*/}
               <article>
