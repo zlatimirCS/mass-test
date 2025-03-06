@@ -8,6 +8,7 @@ import { Box, Typography } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import ImageGallery from "react-image-gallery";
 import "react-image-gallery/styles/css/image-gallery.css";
+import { useRouter } from "next/router";
 
 const MyStyledBox = styled(Box)(({ theme }) => ({
   padding: "60px 0",
@@ -17,15 +18,21 @@ const MyStyledBox = styled(Box)(({ theme }) => ({
 }));
 
 const SingleProductPage = (props: any) => {
-  console.log("Props", props);
-  const { product } = props;
+  const router = useRouter();
+  const { product, productLinks } = props;
+  console.log("product", product);
 
-  const images = product.media_gallery_entries.map((image: any) => ({
+  const images = product?.media_gallery_entries?.map((image: any) => ({
     original: `https://magento.test/pub/media/catalog/product/${image.file}`,
     thumbnail: `https://magento.test/pub/media/catalog/product/${image.file}`,
     fullscreen: `https://magento.test/pub/media/catalog/product/${image.file}`,
     // originalHeight: 400,
   }));
+
+  const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedSku = event.target.value;
+    router.push(`/product/${selectedSku}`);
+  };
 
   return (
     <>
@@ -61,16 +68,18 @@ const SingleProductPage = (props: any) => {
                 >
                   Price: <span>{product.price}</span>
                 </Typography>
+                <div>
+                  <select onChange={handleSelectChange}>
+                    {productLinks?.items?.map((product: any) => (
+                      <option value={product.sku}>{product.name}</option>
+                    ))}
+                  </select>
+                </div>
+
                 <button>Add to cart</button>
               </article>
               {/*Product Details*/}
             </MyStyledBox>
-            {/* <h1>{product.name}</h1>
-            <h3>{product.price}</h3> */}
-            {/* <img
-              src={`https://magento.test/pub/media/catalog/product/${product.media_gallery_entries[0].file}`}
-              alt="asdasd"
-            /> */}
           </div>
         </div>
       </Layout>
@@ -103,7 +112,7 @@ export async function getStaticPaths() {
       rejectUnauthorized: false, // Ignore SSL verification
     });
     const res = await axios.get(
-      "https://magento.test/rest/V1/products?searchCriteria[pageSize]=1&searchCriteria[currentPage]=1&searchCriteria[sortOrders][0][field]=created_at&searchCriteria[sortOrders][0[direction]=DESC&searchCriteria[filterGroups][0][filters][0][field]=type_id&searchCriteria[filterGroups][0][filters][0][value]=configurable&searchCriteria[filterGroups][0][filters][0][condition_type]=eq",
+      "https://magento.test/rest/V1/products?searchCriteria[pageSize]=40&searchCriteria[currentPage]=1&searchCriteria[sortOrders][0][field]=created_at&searchCriteria[sortOrders][0][direction]=DESC&searchCriteria[filterGroups][0][filters][0][field]=type_id&searchCriteria[filterGroups][0][filters][0][value]=configurable&searchCriteria[filterGroups][0][filters][0][condition_type]=eq&searchCriteria[filterGroups][0][filters][1][field]=type_id&searchCriteria[filterGroups][0][filters][1][value]=simple&searchCriteria[filterGroups][0][filters][1][condition_type]=eq",
       {
         headers: {
           Authorization: `Bearer ${authToken}`,
@@ -112,7 +121,6 @@ export async function getStaticPaths() {
       }
     );
     const products = res.data.items;
-    console.log("res Products", products);
 
     const paths = products.map((product: any) => ({
       params: { slug: product.sku },
@@ -132,7 +140,6 @@ export async function getStaticPaths() {
           childProductIds.join(","),
         "searchCriteria[filterGroups][0][filters][0][condition_type]": "in",
       }).toString();
-      console.log("query", query);
 
       const response = await axios.get(
         `https://magento.test/rest/V1/products?${query}`,
@@ -143,18 +150,15 @@ export async function getStaticPaths() {
           httpsAgent: agent,
         }
       );
-      console.log("response123", response?.data);
+      // console.log("response123", response?.data);
       morePaths = response.data.items.map((product: any) => ({
         params: { slug: product.sku },
       }));
-      console.log("morePaths123", morePaths);
     };
 
     if (childProductIds.length > 0) {
       await getMorePaths(childProductIds);
     }
-    console.log("childProductIds", childProductIds);
-    console.log("morePaths", morePaths);
 
     const uniquePaths = Array.from(new Set([...paths, ...morePaths]));
 
@@ -163,9 +167,6 @@ export async function getStaticPaths() {
         arr.findIndex((item) => JSON.stringify(item) === JSON.stringify(o)) ===
         index
     );
-    // console.log("Unique paths", uniquePaths);
-
-    // console.log("morePaths", morePaths);
 
     return { paths: uniqueArray, fallback: false };
   } catch (error) {
@@ -209,8 +210,41 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
       }
     );
     const product = res.data;
+    // console.log("product inside", product);
 
-    return { props: { product } };
+    let productLinks: any = null;
+
+    const childProductIds =
+      product.extension_attributes.configurable_product_links || [];
+
+    const getMorePaths = async (childProductIds: any) => {
+      const query = new URLSearchParams({
+        "searchCriteria[filterGroups][0][filters][0][field]": "entity_id",
+        "searchCriteria[filterGroups][0][filters][0][value]":
+          childProductIds.join(","),
+        "searchCriteria[filterGroups][0][filters][0][condition_type]": "in",
+      }).toString();
+
+      const response = await axios.get(
+        `https://magento.test/rest/V1/products?${query}`,
+        {
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+          },
+          httpsAgent: agent,
+        }
+      );
+      // console.log("response123", response?.data);
+      productLinks = response.data;
+    };
+
+    if (childProductIds.length > 0) {
+      await getMorePaths(childProductIds);
+    }
+
+    // console.log("product links", productLinks);
+
+    return { props: { product, productLinks } };
   } catch (error) {
     console.error("Error fetching product:", error);
     return { props: { product: null } };
