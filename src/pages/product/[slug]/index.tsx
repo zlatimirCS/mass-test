@@ -20,13 +20,11 @@ const MyStyledBox = styled(Box)(({ theme }) => ({
 const SingleProductPage = (props: any) => {
   const router = useRouter();
   const { product, productLinks } = props;
-  console.log("product", product);
 
   const images = product?.media_gallery_entries?.map((image: any) => ({
     original: `https://magento.test/pub/media/catalog/product/${image.file}`,
     thumbnail: `https://magento.test/pub/media/catalog/product/${image.file}`,
     fullscreen: `https://magento.test/pub/media/catalog/product/${image.file}`,
-    // originalHeight: 400,
   }));
 
   const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -150,7 +148,6 @@ export async function getStaticPaths() {
           httpsAgent: agent,
         }
       );
-      // console.log("response123", response?.data);
       morePaths = response.data.items.map((product: any) => ({
         params: { slug: product.sku },
       }));
@@ -210,7 +207,6 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
       }
     );
     const product = res.data;
-    // console.log("product inside", product);
 
     let productLinks: any = null;
 
@@ -234,15 +230,12 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
           httpsAgent: agent,
         }
       );
-      // console.log("response123", response?.data);
       productLinks = response.data;
     };
 
     if (childProductIds.length > 0) {
       await getMorePaths(childProductIds);
     }
-
-    // console.log("product links", productLinks);
 
     return { props: { product, productLinks } };
   } catch (error) {
